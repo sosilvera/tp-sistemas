@@ -4,10 +4,14 @@
 #include <atomic>
 #include <string>
 #include <vector>
+#include <mutex>
+#include <semaphore.h>
 
 #include "ListaAtomica.hpp"
 
 typedef std::pair<std::string, unsigned int> hashMapPair;
+
+using namespace std;
 
 class HashMapConcurrente {
  public:
@@ -26,6 +30,11 @@ class HashMapConcurrente {
     ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
 
     static unsigned int hashIndex(std::string clave);
+
+    mutex _mtx_claves[HashMapConcurrente::cantLetras];
+
+    mutex _mtx;
+    int contador;
 };
 
 #endif  /* HMC_HPP */

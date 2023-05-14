@@ -30,6 +30,10 @@ class ListaAtomica {
 
     void insertar(const T &valor) {
         // Completar (Ejercicio 1)
+        Nodo* nuevo = new Nodo(valor);
+        // atómico, no mantiene el orden!!
+        Nodo* prev = _cabeza.exchange(nuevo);
+        nuevo->_siguiente = prev;
     }
 
     T &cabeza() const {
