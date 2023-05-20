@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <thread>
 #include <semaphore.h>
 
 #include "ListaAtomica.hpp"
@@ -31,10 +32,12 @@ class HashMapConcurrente {
 
     static unsigned int hashIndex(std::string clave);
 
+    void auxiliar(hashMapPair &maximo_tot, atomic<int> &letra);
+
     mutex _mtx_claves[HashMapConcurrente::cantLetras];
 
-    mutex _mtx;
-    int contador;
+    mutex _mtx; mutex _lightswitch; 
+    int _contador_inc;
 };
 
 #endif  /* HMC_HPP */

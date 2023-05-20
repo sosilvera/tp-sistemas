@@ -11,6 +11,7 @@ HashMapConcurrente::HashMapConcurrente(){
     for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
         tabla[i] = new ListaAtomica<hashMapPair>();
     }
+    _contador_inc = 0;
 }
 
 unsigned int HashMapConcurrente::hashIndex(std::string clave) {
@@ -20,13 +21,11 @@ unsigned int HashMapConcurrente::hashIndex(std::string clave) {
 void HashMapConcurrente::incrementar(std::string clave) {
     // Completar (Ejercicio 2)
 
-    /*
-    si puedo:       // puedo = hay algun incrementar ejecutandose || ni inc ni max se estan ejecutando
-        incremento contador
-        le doy permiso al siguiente incrementar
-    si no puedo:
-        wait al max
-    */
+    _mtx.lock();
+    _contador_inc++;
+    if(_contador_inc == 1) // el primero en entrar, prende la luz
+        _lightswitch.lock();
+    _mtx.unlock();
 
     int key = hashIndex(clave);
     _mtx_claves[key].lock();
@@ -48,14 +47,18 @@ void HashMapConcurrente::incrementar(std::string clave) {
         tabla[key]->insertar(make_pair(clave,1));
     
     _mtx_claves[key].unlock();
+
+    _mtx.lock();
+    _contador_inc--;
+    if(_contador_inc == 0) // ultimo en salir, habilita la entrada
+        _lightswitch.unlock();
+    _mtx.unlock();
 }
 
 std::vector<std::string> HashMapConcurrente::claves() {
     // Completar (Ejercicio 2)
-
-    // falta ver si agregan claves después de que ya las recorrí
     vector<string> res;
-    for (int i = 0 ; i < cantLetras; ++i) {
+    for (unsigned int i = 0 ; i < cantLetras; ++i) {
         auto it = tabla[i]->crearIt();
         while (it.haySiguiente()) {
             res.push_back(it.siguiente().first);
@@ -83,6 +86,9 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
 }
 
 hashMapPair HashMapConcurrente::maximo() {
+
+    _lightswitch.lock(); // si ve que hay alguien, no entra
+
     hashMapPair *max = new hashMapPair();
     max->second = 0;
 
@@ -99,11 +105,56 @@ hashMapPair HashMapConcurrente::maximo() {
         }
     }
 
+    _lightswitch.unlock();
+
+    // no destruimos el maximo ??
+
     return *max;
+}
+
+void HashMapConcurrente::auxiliar(hashMapPair &maximo_tot, atomic<int> &letra) {
+    int actual = letra.fetch_add(1);
+    while(actual < cantLetras) {
+
+        hashMapPair max;
+        max.second = 0;
+
+        for (
+            auto it = tabla[actual]->crearIt();
+            it.haySiguiente();
+            it.avanzar()
+        ) {
+            if (it.siguiente().second > max.second) {
+                max.first = it.siguiente().first;
+                max.second = it.siguiente().second;
+            }
+        }
+
+        if (max.second > maximo_tot.second) {
+            maximo_tot.first = max.first;
+            maximo_tot.second = max.second;
+        }
+
+        actual = letra.fetch_add(1);
+    }
 }
 
 hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cantThreads) {
     // Completar (Ejercicio 3)
+
+    vector<thread> threads;
+    hashMapPair maximo;
+    maximo.second = 0;
+    atomic<int> letra(0);
+    for (unsigned int i = 0; i < cantThreads; i++) {
+        threads.emplace_back(&HashMapConcurrente::auxiliar,this,ref(maximo),ref(letra));
+    }
+
+    for (auto& t : threads) { 
+        t.join();
+    }
+
+    return maximo;
 }
 
 #endif
