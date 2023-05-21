@@ -147,7 +147,7 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cantThreads) {
     maximo.second = 0;
     atomic<int> letra(0);
     for (unsigned int i = 0; i < cantThreads; i++) {
-        threads.emplace_back(&HashMapConcurrente::auxiliar,this,ref(maximo),ref(letra));
+        threads.emplace_back(&HashMapConcurrente::auxiliar,this,ref(maximo),ref(letra)); // cosas raras de c++
     }
 
     for (auto& t : threads) { 

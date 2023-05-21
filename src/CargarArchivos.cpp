@@ -24,6 +24,7 @@ int cargarArchivo(
     }
     while (file >> palabraActual) {
         // Completar (Ejercicio 4)
+        hashMap.incrementar(palabraActual); // si no esta definida, la agrega
         cant++;
     }
     // Cierro el archivo.
@@ -36,6 +37,13 @@ int cargarArchivo(
     return cant;
 }
 
+void auxiliar(HashMapConcurrente &hashMap, std::vector<std::string> &filePaths, atomic<int> &prox_archivo) {
+    int actual = prox_archivo.fetch_add(1);
+    while (actual < filePaths.size()) {
+        cargarArchivo(hashMap,filePaths[actual]);
+        actual = prox_archivo.fetch_add(1);
+    }
+}
 
 void cargarMultiplesArchivos(
     HashMapConcurrente &hashMap,
@@ -43,6 +51,16 @@ void cargarMultiplesArchivos(
     std::vector<std::string> filePaths
 ) {
     // Completar (Ejercicio 4)
+    vector<thread> threads;
+    atomic<int> prox_archivo(0);
+    
+    for (unsigned int i = 0; i < cantThreads; ++i) {
+        threads.emplace_back(auxiliar,ref(hashMap),ref(filePaths),ref(prox_archivo));
+    }
+
+    for(auto& t : threads) {
+        t.join();
+    }
 }
 
 #endif
