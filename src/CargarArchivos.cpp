@@ -38,7 +38,7 @@ int cargarArchivo(
 }
 
 void auxiliar(HashMapConcurrente &hashMap, std::vector<std::string> &filePaths, atomic<int> &prox_archivo) {
-    int actual = prox_archivo.fetch_add(1);
+    unsigned int actual = prox_archivo.fetch_add(1);
     while (actual < filePaths.size()) {
         cargarArchivo(hashMap,filePaths[actual]);
         actual = prox_archivo.fetch_add(1);
