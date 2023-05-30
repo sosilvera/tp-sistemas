@@ -19,6 +19,7 @@ class HashMapConcurrente {
     static const unsigned int cantLetras = 26;
 
     HashMapConcurrente();
+    HashMapConcurrente(HashMapConcurrente&& h);
 
     void incrementar(std::string clave);
     std::vector<std::string> claves();
@@ -36,7 +37,8 @@ class HashMapConcurrente {
 
     mutex _mtx_claves[HashMapConcurrente::cantLetras];
 
-    mutex _mtx; mutex _lightswitch; 
+    mutex _mtx; 
+    mutex _lightswitch; 
     int _contador_inc;
 };
 

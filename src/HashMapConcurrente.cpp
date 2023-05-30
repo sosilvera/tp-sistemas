@@ -14,6 +14,14 @@ HashMapConcurrente::HashMapConcurrente(){
     _contador_inc = 0;
 }
 
+HashMapConcurrente::HashMapConcurrente(HashMapConcurrente &&h) : _mtx_claves(), _mtx(), _lightswitch() 
+{
+    for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
+        tabla[i] = new ListaAtomica<hashMapPair>();
+    }
+    _contador_inc = 0;
+}
+
 unsigned int HashMapConcurrente::hashIndex(std::string clave) {
     return (unsigned int)(clave[0] - 'a');
 }
@@ -113,7 +121,7 @@ hashMapPair HashMapConcurrente::maximo() {
 }
 
 void HashMapConcurrente::auxiliar(hashMapPair &maximo_tot, atomic<int> &letra) {
-    int actual = letra.fetch_add(1);
+    unsigned int actual = letra.fetch_add(1);
     while(actual < cantLetras) {
 
         hashMapPair max;
