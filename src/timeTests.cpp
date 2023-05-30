@@ -35,19 +35,25 @@ int main(int argc, char **argv) {
     }
 
     HashMapConcurrente hashMap = HashMapConcurrente();
-    cargarMultiplesArchivos(hashMap, cantThreadsLectura, filePaths);
 
     // medimos tiempos
     struct timespec start, stop; // estructuras que guardan los timestamps
 
     clock_gettime(CLOCK_REALTIME,&start); // tomamos tiempo cuando empieza
-    auto maximo = hashMap.maximoParalelo(cantThreadsMaximo);
+    cargarMultiplesArchivos(hashMap, cantThreadsLectura, filePaths);
     clock_gettime(CLOCK_REALTIME,&stop); // tomamos tiempo cuando termina
-    double tiempo = medir(start,stop);
+    double tiempo_carga = medir(start,stop);
+
+
+    clock_gettime(CLOCK_REALTIME,&start);
+    auto maximo = hashMap.maximoParalelo(cantThreadsMaximo);
+    clock_gettime(CLOCK_REALTIME,&stop);
+    double tiempo_max = medir(start,stop);
 
     std::cout << "El máximo es: " << maximo.first << ", con " << maximo.second << " apariciones" << std::endl;
     
-    std::cout << "Tardó: " << tiempo << "s" << std::endl;
+    std::cout << "Tardó en cargar: " << tiempo_carga << "s" << std::endl;
+    std::cout << "Tardó en buscar el máximo: " << tiempo_max << "s" << std::endl;
 
     return 0;
 }
