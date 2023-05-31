@@ -22,6 +22,12 @@ HashMapConcurrente::HashMapConcurrente(HashMapConcurrente &&h) : _mtx_claves(), 
     _contador_inc = 0;
 }
 
+HashMapConcurrente::~HashMapConcurrente() {
+    for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
+        delete tabla[i];
+    }
+}
+
 unsigned int HashMapConcurrente::hashIndex(std::string clave) {
     return (unsigned int)(clave[0] - 'a');
 }
@@ -97,8 +103,8 @@ hashMapPair HashMapConcurrente::maximo() {
 
     _lightswitch.lock(); // si ve que hay alguien, no entra
 
-    hashMapPair *max = new hashMapPair();
-    max->second = 0;
+    hashMapPair max;
+    max.second = 0;
 
     for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {
         for (
@@ -106,9 +112,9 @@ hashMapPair HashMapConcurrente::maximo() {
             it.haySiguiente();
             it.avanzar()
         ) {
-            if (it.siguiente().second > max->second) {
-                max->first = it.siguiente().first;
-                max->second = it.siguiente().second;
+            if (it.siguiente().second > max.second) {
+                max.first = it.siguiente().first;
+                max.second = it.siguiente().second;
             }
         }
     }
@@ -117,7 +123,7 @@ hashMapPair HashMapConcurrente::maximo() {
 
     // no destruimos el maximo ??
 
-    return *max;
+    return max;
 }
 
 void HashMapConcurrente::auxiliar(hashMapPair &maximo_tot, atomic<int> &letra) {

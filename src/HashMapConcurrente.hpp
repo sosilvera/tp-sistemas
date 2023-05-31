@@ -21,6 +21,8 @@ class HashMapConcurrente {
     HashMapConcurrente();
     HashMapConcurrente(HashMapConcurrente&& h);
 
+    ~HashMapConcurrente();
+
     void incrementar(std::string clave);
     std::vector<std::string> claves();
     unsigned int valor(std::string clave);
