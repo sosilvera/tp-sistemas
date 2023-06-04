@@ -42,6 +42,8 @@ class HashMapConcurrente {
     mutex _mtx; 
     mutex _lightswitch; 
     int _contador_inc;
+
+    mutex _mtx_max;
 };
 
 #endif  /* HMC_HPP */
