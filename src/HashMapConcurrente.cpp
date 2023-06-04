@@ -121,8 +121,6 @@ hashMapPair HashMapConcurrente::maximo() {
 
     _lightswitch.unlock();
 
-    // no destruimos el maximo ??
-
     return max;
 }
 
@@ -155,6 +153,8 @@ void HashMapConcurrente::auxiliar(hashMapPair &maximo_tot, atomic<int> &letra) {
 
 hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cantThreads) {
     // Completar (Ejercicio 3)
+    
+    _lightswitch.lock();
 
     vector<thread> threads;
     hashMapPair maximo;
@@ -167,6 +167,8 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cantThreads) {
     for (auto& t : threads) { 
         t.join();
     }
+    
+    _lightswitch.unlock();
 
     return maximo;
 }
