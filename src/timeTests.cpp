@@ -34,26 +34,47 @@ int main(int argc, char **argv) {
         filePaths.push_back(argv[i]);
     }
 
-    HashMapConcurrente hashMap = HashMapConcurrente();
+    cout << "threads,tiempo-carga,tiempo-maximo" << endl;
+    for(int i = 1; i <= 20; ++i){
 
-    // medimos tiempos
-    struct timespec start, stop; // estructuras que guardan los timestamps
+        double promedio_carga = 0;
+        double promedio_max = 0;
 
-    clock_gettime(CLOCK_REALTIME,&start); // tomamos tiempo cuando empieza
-    cargarMultiplesArchivos(hashMap, cantThreadsLectura, filePaths);
-    clock_gettime(CLOCK_REALTIME,&stop); // tomamos tiempo cuando termina
-    double tiempo_carga = medir(start,stop);
+        int times = 3;
+        for (int j = 0; j < times; ++j) {
+            cantThreadsLectura = i;
+            cantThreadsMaximo = i;
+
+            HashMapConcurrente hashMap = HashMapConcurrente();
+
+            // medimos tiempos
+            struct timespec start, stop; // estructuras que guardan los timestamps
+
+            clock_gettime(CLOCK_REALTIME,&start); // tomamos tiempo cuando empieza
+            cargarMultiplesArchivos(hashMap, cantThreadsLectura, filePaths);
+            clock_gettime(CLOCK_REALTIME,&stop); // tomamos tiempo cuando termina
+            double tiempo_carga = medir(start,stop);
 
 
-    clock_gettime(CLOCK_REALTIME,&start);
-    auto maximo = hashMap.maximoParalelo(cantThreadsMaximo);
-    clock_gettime(CLOCK_REALTIME,&stop);
-    double tiempo_max = medir(start,stop);
+            clock_gettime(CLOCK_REALTIME,&start);
+            auto maximo = hashMap.maximoParalelo(cantThreadsMaximo);
+            clock_gettime(CLOCK_REALTIME,&stop);
+            double tiempo_max = medir(start,stop);
 
-    std::cout << "El máximo es: " << maximo.first << ", con " << maximo.second << " apariciones" << std::endl;
+            promedio_carga += tiempo_carga;
+            promedio_max += tiempo_max;
+        }
+        promedio_carga /= times;
+        promedio_max /= times;
+        cout << i << "," << promedio_carga << "," << promedio_max << endl;
+
+    }
+
+
+    // std::cout << "El máximo es: " << maximo.first << ", con " << maximo.second << " apariciones" << std::endl;
     
-    std::cout << "Tardó en cargar: " << tiempo_carga << "s" << std::endl;
-    std::cout << "Tardó en buscar el máximo: " << tiempo_max << "s" << std::endl;
+    // std::cout << "Tardó en cargar: " << tiempo_carga << "s" << std::endl;
+    // std::cout << "Tardó en buscar el máximo: " << tiempo_max << "s" << std::endl;
 
     return 0;
 }

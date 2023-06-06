@@ -147,7 +147,7 @@ void HashMapConcurrente::auxiliar(hashMapPair &maximo_tot, atomic<int> &letra) {
             maximo_tot.first = max.first;
             maximo_tot.second = max.second;
         }
-        _mtx_max.lock();
+        _mtx_max.unlock();
 
         actual = letra.fetch_add(1);
     }
