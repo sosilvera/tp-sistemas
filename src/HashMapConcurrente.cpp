@@ -12,6 +12,7 @@ HashMapConcurrente::HashMapConcurrente(){
         tabla[i] = new ListaAtomica<hashMapPair>();
     }
     _contador_inc = 0;
+    pthread_spin_init(&_mtx_spin,PTHREAD_PROCESS_SHARED);
 }
 
 HashMapConcurrente::HashMapConcurrente(HashMapConcurrente &&h) : _mtx_claves(), _mtx(), _lightswitch(), _mtx_max()
@@ -20,6 +21,7 @@ HashMapConcurrente::HashMapConcurrente(HashMapConcurrente &&h) : _mtx_claves(), 
         tabla[i] = new ListaAtomica<hashMapPair>();
     }
     _contador_inc = 0;
+    pthread_spin_init(&_mtx_spin,PTHREAD_PROCESS_SHARED);
 }
 
 HashMapConcurrente::~HashMapConcurrente() {
@@ -35,10 +37,12 @@ unsigned int HashMapConcurrente::hashIndex(std::string clave) {
 void HashMapConcurrente::incrementar(std::string clave) {
     // Completar (Ejercicio 2)
 
+    // pthread_spin_lock(&_mtx_spin);
     _mtx.lock();
     _contador_inc++;
     if(_contador_inc == 1) // el primero en entrar, prende la luz
         _lightswitch.lock();
+    // pthread_spin_unlock(&_mtx_spin);
     _mtx.unlock();
 
     int key = hashIndex(clave);
@@ -62,10 +66,12 @@ void HashMapConcurrente::incrementar(std::string clave) {
     
     _mtx_claves[key].unlock();
 
+    // pthread_spin_lock(&_mtx_spin);
     _mtx.lock();
     _contador_inc--;
     if(_contador_inc == 0) // ultimo en salir, habilita la entrada
         _lightswitch.unlock();
+    // pthread_spin_unlock(&_mtx_spin);
     _mtx.unlock();
 }
 

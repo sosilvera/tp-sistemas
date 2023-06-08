@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # df = pd.read_csv("out.csv")
-df = pd.read_csv("out-palabras-iguales.csv")
+df = pd.read_csv("out-palabras-iguales-con-b.csv")
 
 x= df['threads']
 y_c= df['tiempo-carga']

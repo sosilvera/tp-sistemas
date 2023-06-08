@@ -9,7 +9,7 @@ TEST_TARGET = UnitTests
 
 OBJECTS = HashMapConcurrente.o CargarArchivos.o
 
-ADDITIONAL_TARGETS = compRes timeTests
+ADDITIONAL_TARGETS = compRes timeTests timeTestsSpin
 
 all: build $(BUILD_DIR)/$(TARGET) #build $(BUILD_DIR)/$(COMP_TARGET)
 	@$(foreach target,$(ADDITIONAL_TARGETS),$(MAKE) build $(BUILD_DIR)/$(target);)
