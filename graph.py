@@ -4,28 +4,32 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # df = pd.read_csv("out.csv")
-df = pd.read_csv("out-palabras-iguales-con-b.csv")
+df = pd.read_csv("out-files/out-no-uniform.csv")
+df_2 = pd.read_csv("out-files/out-tmp-iguales-con-b.csv")
 
 x= df['threads']
 y_c= df['tiempo-carga']
+y2_c= df_2['tiempo-carga']
 y_m= df['tiempo-maximo']
+y2_m= df_2['tiempo-maximo']
 
-# df['log_threads'] = np.log(df['time'])
-# df['log_cota'] = np.log(df['size'])
-# ax1 = sns.lmplot(x='threads', y='tiempo', height=6, data=df)
-ticks = range(1,21)
-plt.plot(x,y_c)
-plt.xlabel("threads")
-plt.ylabel("tiempo")
-plt.title('carga')
+# grafico tiempo carga
+ticks = range(1,len(x)+1)
+plt.plot(x,y_c) #label=''
+# plt.plot(x,y2_c,label='con a y b',color='red')
+plt.xlabel("Cantidad de threads")
+plt.ylabel("Tiempo en segs")
+plt.title('Carga de archivos con una distribución no uniforme de palabras')
 plt.xticks(ticks)
+plt.legend()
 plt.grid()
 plt.show()
 
-plt.plot(x,y_m)
+plt.plot(x,y_m) # label=''
+# plt.plot(x,y2_m,label='con a y b',color='red')
 plt.xlabel("threads")
-plt.ylabel("tiempo")
-plt.title('max')
+plt.ylabel("Tiempo en segs")
+plt.title('Encontrar el máximo con una distribución no uniforme de palabras')
 plt.xticks(ticks)
 plt.grid()
 plt.show()

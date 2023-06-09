@@ -45,7 +45,7 @@ class HashMapConcurrente {
 
     mutex _mtx_max;
 
-   //  pthread_spinlock_t _mtx_spin;
+    pthread_spinlock_t _mtx_spin;
 };
 
 #endif  /* HMC_HPP */
